@@ -30,14 +30,32 @@ class WeatherGetter {
             else {
                 // Case 2: Success
                 // We got a response from the server!
-                print("Raw data:\n\(data!)\n")
-                let dataString = String(data: data!, encoding: String.Encoding.utf8)
-                print("Human-readable data:\n\(dataString!)")
+                do {
+                    // Try to convert that data into a Swift dictionary
+                    let weather = try JSONSerialization.jsonObject(with:
+                        data!,
+                        options: .allowFragments) as! [String: AnyObject]
+                    
+                    // If we made it to this point, we've successfully converted the
+                    // JSON-formatted weather data into a Swift dictionary.
+                    // Let's print its contents to the debug console.
+                    print(weather)
+                    //print("City: \(weather["city"]!)")
+                    
+                    let currObserv = weather["current_observation"]
+                    let dispLoc = currObserv!["display_location"]!!["city"]
+                    
+                    
+                }
+                catch let jsonError as NSError {
+                    // An error occurred while trying to convert the data into a Swift dictionary.
+                    print("JSON error description: \(jsonError.description)")
+                }
             }
         })
-        
-        // The data task is set up...launch it!
-        myDataTask.resume()
+            
+            // The data task is set up...launch it!
+            myDataTask.resume()
     }
     
 }
